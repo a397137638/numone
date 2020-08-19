@@ -1,0 +1,1328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="xc_001" name="相城标准流程" isExecutable="true">
+    <startEvent id="startevent1" name="Start"></startEvent>
+    <userTask id="jdrwpq3" name="街镇分中心任务派遣" activiti:candidateGroups="${jdzxyGroups_110000017}"></userTask>
+    <userTask id="qjrwpq" name="区联动中心派遣" activiti:candidateGroups="${qjzxyGroups_110000020}">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.srit.userTaskLister.QjpqCreateListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="znbmrwcz" name="职能部门任务处置" activiti:candidateGroups="${qjbmGroups_110000019}"></userTask>
+    <userTask id="qjczhc" name="处置核查" activiti:candidateUsers="${qjwgyUsers}"></userTask>
+    <userTask id="qjja" name="区联动中心结案" activiti:candidateGroups="${qjzxyGroups_110000020}">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.srit.userTaskLister.QjjaCreateListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="start_oper" sourceRef="startevent1" targetRef="exclusivegateway2"></sequenceFlow>
+    <sequenceFlow id="bpmn-0-3301-3301.jsp-待派遣-30" name="上报区级" sourceRef="exclusivegateway2" targetRef="qjrwpq">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${start_oper=="3301"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway3" name="Exclusive Gateway"></exclusiveGateway>
+    <exclusiveGateway id="exclusivegateway4" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="jdrwpq_oper3" sourceRef="jdrwpq3" targetRef="exclusivegateway3"></sequenceFlow>
+    <sequenceFlow id="qjrwpq_oper" sourceRef="qjrwpq" targetRef="exclusivegateway4"></sequenceFlow>
+    <sequenceFlow id="bpmn-0-3302-3302.jsp-待处置-40" name="下派区级职能部门" sourceRef="exclusivegateway4" targetRef="znbmrwcz">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.srit.thirdPlatform.sequenceFlowListener.Response110Listener">
+          <activiti:field name="curOper">
+            <activiti:string><![CDATA[立案]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${qjrwpq_oper=="3302"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway7" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="znbmrwcz_oper" sourceRef="znbmrwcz" targetRef="exclusivegateway7"></sequenceFlow>
+    <sequenceFlow id="bpmn-1-20-3312-3312.jsp-待结案-91" name="处理完毕" sourceRef="exclusivegateway7" targetRef="czpd-servicetask">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${znbmrwcz_oper=="20"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway10" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="qjczhc_oper" sourceRef="qjczhc" targetRef="exclusivegateway10"></sequenceFlow>
+    <sequenceFlow id="bpmn-1-12-3314-3314.jsp-待结案-91" name="属实" sourceRef="exclusivegateway10" targetRef="qjja">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${qjczhc_oper=="12"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn-0-3304-3304.jsp-待派遣-30" name="下派街道" sourceRef="exclusivegateway4" targetRef="jdrwpq3">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.srit.thirdPlatform.sequenceFlowListener.Response110Listener">
+          <activiti:field name="curOper">
+            <activiti:string><![CDATA[立案]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${qjrwpq_oper=="3304"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway13" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="qjja_oper" sourceRef="qjja" targetRef="exclusivegateway13"></sequenceFlow>
+    <sequenceFlow id="bpmn-0-3313-3313.jsp-待结案核查-50" name="核查派遣" sourceRef="exclusivegateway13" targetRef="qjczhc">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${qjja_oper=="3313"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn-1-13-3314-3314.jsp-待处置-40" name="不属实" sourceRef="exclusivegateway10" targetRef="qjrwpq">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${qjczhc_oper=="13"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="wths" name="问题核实反馈" activiti:candidateUsers="${qjwgyUsers}"></userTask>
+    <sequenceFlow id="bpmn-0-3305-3305.jsp-待问题核实-11" name="核实派遣" sourceRef="exclusivegateway4" targetRef="wths">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${qjrwpq_oper=="3305"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway14" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="wths_oper" sourceRef="wths" targetRef="exclusivegateway14"></sequenceFlow>
+    <sequenceFlow id="bpmn-1-11-3306-3306.jsp-问题核实完毕-12" name="不属实" sourceRef="exclusivegateway14" targetRef="qjhspq">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wths_oper=="11"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn-1-10-3306-3306.jsp-待派遣-30" name="属实" sourceRef="exclusivegateway14" targetRef="qjrwpq">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wths_oper=="10"}]]></conditionExpression>
+    </sequenceFlow>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="bpmn-1-22-3312-3312.jsp-待派遣-30" name="无法处理" sourceRef="exclusivegateway7" targetRef="qjrwpq">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${znbmrwcz_oper=="22"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn-0-3321-3321.jsp-已结案-90" name="区级结案" sourceRef="exclusivegateway13" targetRef="endevent1">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.srit.thirdPlatform.sequenceFlowListener.Response110Listener">
+          <activiti:field name="curOper">
+            <activiti:string><![CDATA[结案]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${qjja_oper=="3321"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn-0-3311-3311.jsp-废案-00" name="废案" sourceRef="exclusivegateway4" targetRef="endevent1">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.srit.thirdPlatform.sequenceFlowListener.Response110Listener">
+          <activiti:field name="curOper">
+            <activiti:string><![CDATA[废案]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${qjrwpq_oper=="3311"}]]></conditionExpression>
+    </sequenceFlow>
+    <serviceTask id="czpd-servicetask" name="处置判定" activiti:class="com.srit.servicetask.WzCzpdServiceTask"></serviceTask>
+    <exclusiveGateway id="exclusivegateway15" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="czpd_oper" sourceRef="czpd-servicetask" targetRef="exclusivegateway15"></sequenceFlow>
+    <sequenceFlow id="flow2" sourceRef="exclusivegateway15" targetRef="qjja">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${czpd_oper=="2"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow3" sourceRef="exclusivegateway15" targetRef="qjrwpq">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${czpd_oper=="1"}]]></conditionExpression>
+    </sequenceFlow>
+    <serviceTask id="czpd-servicetask2" name="处置判定" activiti:class="com.srit.servicetask.WzJDCzpdServiceTask"></serviceTask>
+    <exclusiveGateway id="exclusivegateway16" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="czpd_oper2" sourceRef="czpd-servicetask2" targetRef="exclusivegateway16"></sequenceFlow>
+    <sequenceFlow id="flow5" sourceRef="exclusivegateway16" targetRef="qjja">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${jdczpd_oper=="2"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow6" sourceRef="exclusivegateway16" targetRef="qjrwpq">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${jdczpd_oper=="1"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="lxhy" name="协办部门处置" activiti:candidateGroups="${depart}">
+      <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="departList" activiti:elementVariable="depart">
+        <completionCondition>${nrOfCompletedInstances&gt;=nrOfInstances}</completionCondition>
+      </multiInstanceLoopCharacteristics>
+    </userTask>
+	``````````````````````
+    <sequenceFlow id="bpmn-0-3331-3331.jsp-待协办部门反馈-778" name="派遣协办部门" sourceRef="exclusivegateway26" targetRef="lxhy">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${zbbmpqxb_oper=="3331"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn-1-20-3335-3335.jsp-待主办部门反馈-779" name="处理完毕" sourceRef="exclusivegateway28" targetRef="zbbmfk">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${lxhy_oper=="20"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="usertask1" name="街镇任务处置" activiti:candidateGroups="${ksGroups_110000015}"></userTask>
+    <sequenceFlow id="bpmn-0-3206-3206.jsp-待处置-40" name="下派街镇科室" sourceRef="exclusivegateway3" targetRef="usertask1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${jdrwpq_oper3=="3206"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway17" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="ksrwcz_oper" sourceRef="usertask1" targetRef="exclusivegateway17"></sequenceFlow>
+    <sequenceFlow id="bpmn2-1-22-3212-3212.jsp-待派遣-30" name="无法处理" sourceRef="exclusivegateway17" targetRef="jdrwpq3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ksrwcz_oper=="22"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="ejznbmrwcz" name="二级职能部门任务处置" activiti:candidateGroups="${qjejbmGroups_110000028}"></userTask>
+    <sequenceFlow id="bpmn-0-5003-5003.jsp-待处置-40" name="下派二级职能部门" sourceRef="exclusivegateway7" targetRef="ejznbmrwcz">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${znbmrwcz_oper=="5003"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn-1-20-5013-5013.jsp-待处置-40" name="处理完毕" sourceRef="exclusivegateway20" targetRef="znbmrwcz">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ejznbmrwcz_oper=="20"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway20" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="ejznbmrwcz_oper" sourceRef="ejznbmrwcz" targetRef="exclusivegateway20"></sequenceFlow>
+    <sequenceFlow id="bpmn-1-22-5013-5013.jsp-待处置-40" name="无法处理" sourceRef="exclusivegateway20" targetRef="znbmrwcz">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ejznbmrwcz_oper=="22"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn3-1-22-3203-3203.jsp-待派遣-30" name="无法处理" sourceRef="exclusivegateway3" targetRef="czpd-servicetask2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${jdrwpq_oper3=="22"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn3-1-23-3203-3203.jsp-待派遣-30" name="非我权属" sourceRef="exclusivegateway3" targetRef="czpd-servicetask2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${jdrwpq_oper3=="23"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn2-1-23-3212-3212.jsp-待派遣-30" name="非我权属" sourceRef="exclusivegateway17" targetRef="jdrwpq3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ksrwcz_oper=="23"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn-1-23-5013-5013.jsp-待处置-40" name="非我权属" sourceRef="exclusivegateway20" targetRef="znbmrwcz">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ejznbmrwcz_oper=="23"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn-1-23-3312-3312.jsp-待派遣-30" name="非我权属" sourceRef="exclusivegateway7" targetRef="qjrwpq">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${znbmrwcz_oper=="23"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn-0-3201-3201.jsp-待派遣-30" name="上报街道" sourceRef="exclusivegateway2" targetRef="jdrwpq3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${start_oper=="3201"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="jdczhc" name="处置核查" activiti:candidateUsers="${jdwgyUsers}"></userTask>
+    <userTask id="jdja" name="街镇分中心结案" activiti:candidateGroups="${jdzxyGroups_110000017}">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.srit.userTaskLister.QjjaCreateListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow7" sourceRef="exclusivegateway16" targetRef="jdja">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${jdczpd_oper=="4"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway21" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="jdja_oper" sourceRef="jdja" targetRef="exclusivegateway21"></sequenceFlow>
+    <sequenceFlow id="bpmn-0-3213-3213.jsp-待结案核查-50" name="核查派遣" sourceRef="exclusivegateway21" targetRef="jdczhc">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${jdja_oper=="3213"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn-0-3221-3221.jsp-已结案-90" name="结案" sourceRef="exclusivegateway21" targetRef="endevent1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${jdja_oper=="3221"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway22" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="jdczhc_oper" sourceRef="jdczhc" targetRef="exclusivegateway22"></sequenceFlow>
+    <sequenceFlow id="bpmn-1-12-3214-3214.jsp-待结案-91" name="属实" sourceRef="exclusivegateway22" targetRef="jdja">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${jdczhc_oper=="12"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn-1-13-3214-3214.jsp-待派遣-30" name="不属实" sourceRef="exclusivegateway22" targetRef="jdrwpq3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${jdczhc_oper=="13"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow8" sourceRef="exclusivegateway16" targetRef="jdrwpq3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${jdczpd_oper=="3"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn3-1-20-3203-3203.jsp-待派遣-30" name="处理完毕" sourceRef="exclusivegateway3" targetRef="czpd-servicetask2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${jdrwpq_oper3=="20"}]]></conditionExpression>
+    </sequenceFlow>
+	~~~~~~~~~~~~~~
+    <userTask id="qjhspq" name="区联动中心核实" activiti:candidateGroups="${qjzxyGroups_110000020}"></userTask>
+    <exclusiveGateway id="exclusivegateway24" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="qjhspq_oper" sourceRef="qjhspq" targetRef="exclusivegateway24"></sequenceFlow>
+    <sequenceFlow id="bpmn1-0-3305-3305.jsp-待问题核实-11" name="核实派遣" sourceRef="exclusivegateway24" targetRef="wths">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${qjhspq_oper=="3305"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn1-0-3311-3311.jsp-废案-00" name="废案" sourceRef="exclusivegateway24" targetRef="endevent1">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.srit.thirdPlatform.sequenceFlowListener.Response110Listener">
+          <activiti:field name="curOper">
+            <activiti:string><![CDATA[废案]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${qjhspq_oper=="3311"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="waitSjcg" name="市级城管" activiti:candidateGroups="110000031">
+      <extensionElements>
+        <activiti:taskListener event="all" class="com.srit.thirdPlatform.forSjszcg.userTaskListener.WaitSjcgListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="bpmn1-0-5339-5339.jsp-待市级城管回复上报市级结果-5341" name="上报市级" sourceRef="exclusivegateway24" targetRef="waitSjcg">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${qjhspq_oper=="5339"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn-0-5339-5339.jsp-待市级城管回复上报市级结果-5341" name="上报市级" sourceRef="exclusivegateway4" targetRef="waitSjcg">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${qjrwpq_oper=="5339"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn1-0-5333-5333.jsp-待市级城管回退申请通知-5337" name="向市级城管申请回退" sourceRef="exclusivegateway24" targetRef="waitSjcg">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${qjhspq_oper=="5333"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn-0-5333-5333.jsp-待市级城管回退申请通知-5337" name="向市级城管申请回退" sourceRef="exclusivegateway4" targetRef="waitSjcg">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${qjrwpq_oper=="5333"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn-0-5334-5334.jsp-待市级城管结案申请通知-5338" name="向市级城管申请结案" sourceRef="exclusivegateway13" targetRef="waitSjcg">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${qjja_oper=="5334"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="qrwjpq1" name="区联动中心派遣" activiti:candidateGroups="${qjzxyGroups_110000020}"></userTask>
+    <sequenceFlow id="bpmn-1-21-3312-3312.jsp-待派遣-30" name="申请联席" sourceRef="exclusivegateway7" targetRef="qrwjpq1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${znbmrwcz_oper=="21"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway25" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="qjrwpq1_oper" sourceRef="qrwjpq1" targetRef="exclusivegateway25"></sequenceFlow>
+    <sequenceFlow id="bpmn1-0-3302-3302.jsp-待处置-40" name="下派区级职能部门" sourceRef="exclusivegateway25" targetRef="znbmrwcz">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${qjrwpq1_oper=="3302"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn1-0-3304-3304.jsp-待派遣-30" name="下派街道" sourceRef="exclusivegateway25" targetRef="jdrwpq3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${qjrwpq1_oper=="3304"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="zbbmpqxb" name="主办部门派遣协办" activiti:candidateGroups="${qjbmGroups_110000019}"></userTask>
+    <sequenceFlow id="bpmn-0-3315-3315.jsp-待派遣协办部门-777" name="派遣联席主办部门" sourceRef="exclusivegateway25" targetRef="zbbmpqxb">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${qjrwpq1_oper=="3315"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway26" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="zbbmpqxb_oper" sourceRef="zbbmpqxb" targetRef="exclusivegateway26"></sequenceFlow>
+    <userTask id="zbbmfk" name="主办部门反馈" activiti:candidateGroups="${qjbmGroups_110000019}"></userTask>
+    <exclusiveGateway id="exclusivegateway27" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="zbbmfk_oper" sourceRef="zbbmfk" targetRef="exclusivegateway27"></sequenceFlow>
+    <sequenceFlow id="bpmn1-1-23-3312-3312.jsp-待派遣-30" name="非我权属" sourceRef="exclusivegateway26" targetRef="qjrwpq">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${zbbmpqxb_oper=="23"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn1-1-22-3312-3312.jsp-待派遣-30" name="无法处理" sourceRef="exclusivegateway26" targetRef="qjrwpq">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${zbbmpqxb_oper=="22"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn1-1-20-3312-3312.jsp-待结案-91" name="处理完毕" sourceRef="exclusivegateway26" targetRef="qjja">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${zbbmpqxb_oper=="20"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn2-1-22-3336-3336.jsp-待派遣-30" name="无法处理" sourceRef="exclusivegateway27" targetRef="qjrwpq">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${zbbmfk_oper=="22"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn2-1-23-3336-3336.jsp-待派遣-30" name="非我权属" sourceRef="exclusivegateway27" targetRef="qjrwpq">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${zbbmfk_oper=="23"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn2-1-20-3336-3336.jsp-待结案-91" name="处理完毕" sourceRef="exclusivegateway27" targetRef="qjja">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${zbbmfk_oper=="20"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn1-0-3331-3331.jsp-待协办部门反馈-778" name="派遣协办部门" sourceRef="exclusivegateway27" targetRef="lxhy">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${zbbmfk_oper=="3331"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn1-0-3315-3315.jsp-待派遣协办部门-777" name="派遣联席主办部门" sourceRef="exclusivegateway13" targetRef="zbbmpqxb">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${qjja_oper=="3315"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn2-0-3315-3315.jsp-待派遣协办部门-777" name="派遣联席主办部门" sourceRef="exclusivegateway4" targetRef="zbbmpqxb">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${qjrwpq_oper=="3315"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn2-0-3302-3302.jsp-待处置-40" name="下派区级职能部门" sourceRef="exclusivegateway13" targetRef="znbmrwcz">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${qjja_oper=="3302"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn2-0-3304-3304.jsp-待派遣-30" name="下派街道" sourceRef="exclusivegateway13" targetRef="jdrwpq3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${qjja_oper=="3304"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn2-0-3311-3311.jsp-废案-00" name="废案" sourceRef="exclusivegateway13" targetRef="endevent1">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.srit.thirdPlatform.sequenceFlowListener.Response110Listener">
+          <activiti:field name="curOper">
+            <activiti:string><![CDATA[废案]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${qjja_oper=="3311"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn2-0-5333-5333.jsp-待市级城管回退申请通知-5337" name="向市级城管申请回退" sourceRef="exclusivegateway13" targetRef="waitSjcg">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${qjja_oper=="5333"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn3-0-3311-3311.jsp-废案-00" name="废案" sourceRef="exclusivegateway25" targetRef="endevent1">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.srit.thirdPlatform.sequenceFlowListener.Response110Listener">
+          <activiti:field name="curOper">
+            <activiti:string><![CDATA[废案]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${qjrwpq1_oper=="3311"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn3-0-5333-5333.jsp-待市级城管回退申请通知-5337" name="向市级城管申请回退" sourceRef="exclusivegateway25" targetRef="waitSjcg">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${qjrwpq1_oper=="5333"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway28" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="lxhy_oper" sourceRef="lxhy" targetRef="exclusivegateway28"></sequenceFlow>
+    <sequenceFlow id="bpmn-1-22-3335-3335.jsp-待主办部门反馈-779" name="无法处理" sourceRef="exclusivegateway28" targetRef="zbbmfk">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${lxhy_oper=="22"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn-1-23-3335-3335.jsp-待主办部门反馈-779" name="非我权属" sourceRef="exclusivegateway28" targetRef="zbbmfk">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${lxhy_oper=="23"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn1-0-5334-5334.jsp-待市级城管结案申请通知-5338" name="向市级城管申请结案" sourceRef="exclusivegateway4" targetRef="waitSjcg">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${qjrwpq_oper=="5334"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn2-0-5334-5334.jsp-待市级城管结案申请通知-5338" name="向市级城管申请结案" sourceRef="exclusivegateway24" targetRef="waitSjcg">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${qjhspq_oper=="5334"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn-0-3211-3211.jsp-废案-00" name="废案" sourceRef="exclusivegateway3" targetRef="endevent1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${jdrwpq_oper3=="3211"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn3-0-3211-3211.jsp-废案-00" name="废案" sourceRef="exclusivegateway21" targetRef="endevent1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${jdja_oper=="3211"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="sqzxypq" name="社区派遣" activiti:candidateGroups="${sqzxyGroups_110000016}"></userTask>
+    <sequenceFlow id="bpmn-0-3207-3207.jsp-待派遣-30" name="下派社区" sourceRef="exclusivegateway3" targetRef="sqzxypq">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${jdrwpq_oper3=="3207"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="sjwgzcz" name="三级网格长处置" activiti:candidateUsers="${sjrwczUsers}"></userTask>
+    <exclusiveGateway id="exclusivegateway30" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="sqzxypq_oper" sourceRef="sqzxypq" targetRef="exclusivegateway30"></sequenceFlow>
+    <sequenceFlow id="bpmn1-0-3204-3204.jsp-待处置-40" name="派遣三级网格长" sourceRef="exclusivegateway30" targetRef="sjwgzcz">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${sqzxypq_oper=="3204"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway31" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="sjwggzz_oper" sourceRef="sjwgzcz" targetRef="exclusivegateway31"></sequenceFlow>
+    <sequenceFlow id="bpmn-1-23-3012-3012.jsp-待处置-40" name="非我权属" sourceRef="exclusivegateway31" targetRef="sqzxypq">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${sjwggzz_oper=="23"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn-1-22-3012-3012.jsp-待处置-40" name="无法处理" sourceRef="exclusivegateway31" targetRef="sqzxypq">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${sjwggzz_oper=="22"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn-1-20-3012-3012.jsp-待派遣-30" name="处理完毕" sourceRef="exclusivegateway31" targetRef="sqzxypq">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${sjwggzz_oper=="20"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn1-1-23-3208-3208.jsp-待派遣-30" name="非我权属" sourceRef="exclusivegateway30" targetRef="jdrwpq3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${sqzxypq_oper=="23"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn1-1-22-3208-3208.jsp-待派遣-30" name="无法处理" sourceRef="exclusivegateway30" targetRef="jdrwpq3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${sqzxypq_oper=="22"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn1-1-20-3208-3208.jsp-待派遣-30" name="处理完毕" sourceRef="exclusivegateway30" targetRef="jdrwpq3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${sqzxypq_oper=="20"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="ejwgzcz" name="二级网格长处置" activiti:candidateUsers="${ejrwczUsers}"></userTask>
+    <sequenceFlow id="bpmn-0-3205-3205.jsp-待处置-40" name="派遣二级网格长" sourceRef="exclusivegateway30" targetRef="ejwgzcz">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${sqzxypq_oper=="3205"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn2-1-20-3212-3212.jsp-待派遣-30" name="处理完毕" sourceRef="exclusivegateway17" targetRef="jdrwpq3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ksrwcz_oper=="20"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway32" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="ejwgzcz_oper" sourceRef="ejwgzcz" targetRef="exclusivegateway32"></sequenceFlow>
+    <sequenceFlow id="bpmn-1-23-3112-3112.jsp-待派遣-30" name="非我权属" sourceRef="exclusivegateway32" targetRef="sqzxypq">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ejwgzcz_oper=="23"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn-1-22-3112-3112.jsp-待派遣-30" name="无法处理" sourceRef="exclusivegateway32" targetRef="sqzxypq">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ejwgzcz_oper=="22"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn-1-20-3112-3112.jsp-待派遣-30" name="处理完毕" sourceRef="exclusivegateway32" targetRef="sqzxypq">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ejwgzcz_oper=="20"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="sqja" name="社区结案" activiti:candidateGroups="${sqzxyGroups_110000016}"></userTask>
+    <sequenceFlow id="flow9" sourceRef="exclusivegateway16" targetRef="sqja">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${jdczpd_oper=="5"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway33" name="Exclusive Gateway"></exclusiveGateway>
+    <userTask id="sqczhc" name="处置核查" activiti:candidateUsers="${jdwgyUsers}"></userTask>
+    <exclusiveGateway id="exclusivegateway34" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="sqja_oper" sourceRef="sqja" targetRef="exclusivegateway33"></sequenceFlow>
+    <sequenceFlow id="bpmn3-0-3111-3111.jsp-废案-00" name="废案" sourceRef="exclusivegateway33" targetRef="endevent1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${sqja_oper=="3111"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn-0-3121-3121.jsp-已结案-90" name="结案" sourceRef="exclusivegateway33" targetRef="endevent1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${sqja_oper=="3121"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn-0-3113-3113.jsp-待结案核查-50" name="核查派遣" sourceRef="exclusivegateway33" targetRef="sqczhc">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${sqja_oper=="3113"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sqczhc_oper" sourceRef="sqczhc" targetRef="exclusivegateway34"></sequenceFlow>
+    <sequenceFlow id="bpmn-1-12-3114-3114.jsp-待结案-91" name="属实" sourceRef="exclusivegateway34" targetRef="sqja">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${sqczhc_oper=="12"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn-1-13-3114-3114.jsp-待派遣-30" name="不属实" sourceRef="exclusivegateway34" targetRef="sqzxypq">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${sqczhc_oper=="13"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="bpmn-0-3101-3101.jsp-待派遣-30" name="上报社区" sourceRef="exclusivegateway2" targetRef="sqzxypq">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${start_oper=="3101"}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_xc_001">
+    <bpmndi:BPMNPlane bpmnElement="xc_001" id="BPMNPlane_xc_001">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="947.0" y="1.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="jdrwpq3" id="BPMNShape_jdrwpq3">
+        <omgdc:Bounds height="64.0" width="114.0" x="538.0" y="230.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="qjrwpq" id="BPMNShape_qjrwpq">
+        <omgdc:Bounds height="55.0" width="105.0" x="912.0" y="160.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="znbmrwcz" id="BPMNShape_znbmrwcz">
+        <omgdc:Bounds height="63.0" width="114.0" x="908.0" y="312.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="qjczhc" id="BPMNShape_qjczhc">
+        <omgdc:Bounds height="55.0" width="105.0" x="912.0" y="824.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="qjja" id="BPMNShape_qjja">
+        <omgdc:Bounds height="55.0" width="105.0" x="910.0" y="668.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway2" id="BPMNShape_exclusivegateway2">
+        <omgdc:Bounds height="40.0" width="40.0" x="944.0" y="81.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway3" id="BPMNShape_exclusivegateway3">
+        <omgdc:Bounds height="40.0" width="40.0" x="574.0" y="337.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway4" id="BPMNShape_exclusivegateway4">
+        <omgdc:Bounds height="40.0" width="40.0" x="944.0" y="241.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway7" id="BPMNShape_exclusivegateway7">
+        <omgdc:Bounds height="40.0" width="40.0" x="944.0" y="411.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway10" id="BPMNShape_exclusivegateway10">
+        <omgdc:Bounds height="40.0" width="40.0" x="904.0" y="753.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway13" id="BPMNShape_exclusivegateway13">
+        <omgdc:Bounds height="40.0" width="40.0" x="984.0" y="753.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="wths" id="BPMNShape_wths">
+        <omgdc:Bounds height="55.0" width="105.0" x="1079.0" y="234.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway14" id="BPMNShape_exclusivegateway14">
+        <omgdc:Bounds height="40.0" width="40.0" x="1111.0" y="158.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="947.0" y="1001.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="czpd-servicetask" id="BPMNShape_czpd-servicetask">
+        <omgdc:Bounds height="55.0" width="105.0" x="910.0" y="507.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway15" id="BPMNShape_exclusivegateway15">
+        <omgdc:Bounds height="40.0" width="40.0" x="944.0" y="589.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="czpd-servicetask2" id="BPMNShape_czpd-servicetask2">
+        <omgdc:Bounds height="55.0" width="105.0" x="714.0" y="530.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway16" id="BPMNShape_exclusivegateway16">
+        <omgdc:Bounds height="40.0" width="40.0" x="746.0" y="397.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lxhy" id="BPMNShape_lxhy">
+        <omgdc:Bounds height="55.0" width="105.0" x="1188.0" y="793.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask1" id="BPMNShape_usertask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="714.0" y="330.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway17" id="BPMNShape_exclusivegateway17">
+        <omgdc:Bounds height="40.0" width="40.0" x="746.0" y="275.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ejznbmrwcz" id="BPMNShape_ejznbmrwcz">
+        <omgdc:Bounds height="63.0" width="114.0" x="1085.0" y="400.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway20" id="BPMNShape_exclusivegateway20">
+        <omgdc:Bounds height="40.0" width="40.0" x="1121.0" y="323.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="jdczhc" id="BPMNShape_jdczhc">
+        <omgdc:Bounds height="55.0" width="105.0" x="369.0" y="914.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="jdja" id="BPMNShape_jdja">
+        <omgdc:Bounds height="55.0" width="105.0" x="673.0" y="914.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway21" id="BPMNShape_exclusivegateway21">
+        <omgdc:Bounds height="40.0" width="40.0" x="564.0" y="942.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway22" id="BPMNShape_exclusivegateway22">
+        <omgdc:Bounds height="40.0" width="40.0" x="564.0" y="881.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="qjhspq" id="BPMNShape_qjhspq">
+        <omgdc:Bounds height="55.0" width="105.0" x="1220.0" y="151.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway24" id="BPMNShape_exclusivegateway24">
+        <omgdc:Bounds height="40.0" width="40.0" x="1252.0" y="241.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="waitSjcg" id="BPMNShape_waitSjcg">
+        <omgdc:Bounds height="55.0" width="105.0" x="1414.0" y="108.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="qrwjpq1" id="BPMNShape_qrwjpq1">
+        <omgdc:Bounds height="55.0" width="105.0" x="1067.0" y="507.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway25" id="BPMNShape_exclusivegateway25">
+        <omgdc:Bounds height="40.0" width="40.0" x="1099.0" y="589.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="zbbmpqxb" id="BPMNShape_zbbmpqxb">
+        <omgdc:Bounds height="55.0" width="105.0" x="1252.0" y="582.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway26" id="BPMNShape_exclusivegateway26">
+        <omgdc:Bounds height="40.0" width="40.0" x="1220.0" y="679.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="zbbmfk" id="BPMNShape_zbbmfk">
+        <omgdc:Bounds height="55.0" width="105.0" x="1446.0" y="793.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway27" id="BPMNShape_exclusivegateway27">
+        <omgdc:Bounds height="40.0" width="40.0" x="1478.0" y="679.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway28" id="BPMNShape_exclusivegateway28">
+        <omgdc:Bounds height="40.0" width="40.0" x="1321.0" y="800.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sqzxypq" id="BPMNShape_sqzxypq">
+        <omgdc:Bounds height="55.0" width="105.0" x="357.0" y="330.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sjwgzcz" id="BPMNShape_sjwgzcz">
+        <omgdc:Bounds height="55.0" width="105.0" x="190.0" y="429.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway30" id="BPMNShape_exclusivegateway30">
+        <omgdc:Bounds height="40.0" width="40.0" x="389.0" y="443.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway31" id="BPMNShape_exclusivegateway31">
+        <omgdc:Bounds height="40.0" width="40.0" x="222.0" y="537.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ejwgzcz" id="BPMNShape_ejwgzcz">
+        <omgdc:Bounds height="55.0" width="105.0" x="529.0" y="436.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway32" id="BPMNShape_exclusivegateway32">
+        <omgdc:Bounds height="40.0" width="40.0" x="561.0" y="537.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sqja" id="BPMNShape_sqja">
+        <omgdc:Bounds height="55.0" width="105.0" x="673.0" y="765.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway33" id="BPMNShape_exclusivegateway33">
+        <omgdc:Bounds height="40.0" width="40.0" x="564.0" y="803.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sqczhc" id="BPMNShape_sqczhc">
+        <omgdc:Bounds height="55.0" width="105.0" x="369.0" y="765.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway34" id="BPMNShape_exclusivegateway34">
+        <omgdc:Bounds height="40.0" width="40.0" x="561.0" y="734.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="start_oper" id="BPMNEdge_start_oper">
+        <omgdi:waypoint x="964.0" y="36.0"></omgdi:waypoint>
+        <omgdi:waypoint x="964.0" y="81.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-0-3301-3301.jsp-待派遣-30" id="BPMNEdge_bpmn-0-3301-3301.jsp-待派遣-30">
+        <omgdi:waypoint x="964.0" y="121.0"></omgdi:waypoint>
+        <omgdi:waypoint x="964.0" y="160.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="885.0" y="121.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="jdrwpq_oper3" id="BPMNEdge_jdrwpq_oper3">
+        <omgdi:waypoint x="595.0" y="294.0"></omgdi:waypoint>
+        <omgdi:waypoint x="594.0" y="337.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="qjrwpq_oper" id="BPMNEdge_qjrwpq_oper">
+        <omgdi:waypoint x="964.0" y="215.0"></omgdi:waypoint>
+        <omgdi:waypoint x="964.0" y="241.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-0-3302-3302.jsp-待处置-40" id="BPMNEdge_bpmn-0-3302-3302.jsp-待处置-40">
+        <omgdi:waypoint x="964.0" y="281.0"></omgdi:waypoint>
+        <omgdi:waypoint x="965.0" y="312.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="54.0" width="100.0" x="968.0" y="274.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="znbmrwcz_oper" id="BPMNEdge_znbmrwcz_oper">
+        <omgdi:waypoint x="965.0" y="375.0"></omgdi:waypoint>
+        <omgdi:waypoint x="964.0" y="411.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-1-20-3312-3312.jsp-待结案-91" id="BPMNEdge_bpmn-1-20-3312-3312.jsp-待结案-91">
+        <omgdi:waypoint x="964.0" y="451.0"></omgdi:waypoint>
+        <omgdi:waypoint x="962.0" y="507.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="932.0" y="469.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="qjczhc_oper" id="BPMNEdge_qjczhc_oper">
+        <omgdi:waypoint x="964.0" y="824.0"></omgdi:waypoint>
+        <omgdi:waypoint x="924.0" y="793.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-1-12-3314-3314.jsp-待结案-91" id="BPMNEdge_bpmn-1-12-3314-3314.jsp-待结案-91">
+        <omgdi:waypoint x="924.0" y="753.0"></omgdi:waypoint>
+        <omgdi:waypoint x="962.0" y="723.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="54.0" width="24.0" x="934.0" y="753.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-0-3304-3304.jsp-待派遣-30" id="BPMNEdge_bpmn-0-3304-3304.jsp-待派遣-30">
+        <omgdi:waypoint x="944.0" y="261.0"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="262.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="894.0" y="240.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="qjja_oper" id="BPMNEdge_qjja_oper">
+        <omgdi:waypoint x="962.0" y="723.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1004.0" y="753.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-0-3313-3313.jsp-待结案核查-50" id="BPMNEdge_bpmn-0-3313-3313.jsp-待结案核查-50">
+        <omgdi:waypoint x="1004.0" y="793.0"></omgdi:waypoint>
+        <omgdi:waypoint x="964.0" y="824.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="985.0" y="799.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-1-13-3314-3314.jsp-待处置-40" id="BPMNEdge_bpmn-1-13-3314-3314.jsp-待处置-40">
+        <omgdi:waypoint x="904.0" y="773.0"></omgdi:waypoint>
+        <omgdi:waypoint x="845.0" y="776.0"></omgdi:waypoint>
+        <omgdi:waypoint x="847.0" y="178.0"></omgdi:waypoint>
+        <omgdi:waypoint x="912.0" y="187.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="54.0" width="36.0" x="870.0" y="753.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-0-3305-3305.jsp-待问题核实-11" id="BPMNEdge_bpmn-0-3305-3305.jsp-待问题核实-11">
+        <omgdi:waypoint x="984.0" y="261.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1079.0" y="261.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="985.0" y="240.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="wths_oper" id="BPMNEdge_wths_oper">
+        <omgdi:waypoint x="1131.0" y="234.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1131.0" y="198.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-1-11-3306-3306.jsp-问题核实完毕-12" id="BPMNEdge_bpmn-1-11-3306-3306.jsp-问题核实完毕-12">
+        <omgdi:waypoint x="1151.0" y="178.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1220.0" y="178.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="48.0" x="1152.0" y="162.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-1-10-3306-3306.jsp-待派遣-30" id="BPMNEdge_bpmn-1-10-3306-3306.jsp-待派遣-30">
+        <omgdi:waypoint x="1111.0" y="178.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1017.0" y="187.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="32.0" x="1054.0" y="179.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-1-22-3312-3312.jsp-待派遣-30" id="BPMNEdge_bpmn-1-22-3312-3312.jsp-待派遣-30">
+        <omgdi:waypoint x="944.0" y="431.0"></omgdi:waypoint>
+        <omgdi:waypoint x="890.0" y="430.0"></omgdi:waypoint>
+        <omgdi:waypoint x="890.0" y="307.0"></omgdi:waypoint>
+        <omgdi:waypoint x="890.0" y="225.0"></omgdi:waypoint>
+        <omgdi:waypoint x="964.0" y="215.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="54.0" width="48.0" x="902.0" y="412.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-0-3321-3321.jsp-已结案-90" id="BPMNEdge_bpmn-0-3321-3321.jsp-已结案-90">
+        <omgdi:waypoint x="1024.0" y="773.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1048.0" y="788.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1048.0" y="848.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1048.0" y="1018.0"></omgdi:waypoint>
+        <omgdi:waypoint x="982.0" y="1018.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="1021.0" y="947.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-0-3311-3311.jsp-废案-00" id="BPMNEdge_bpmn-0-3311-3311.jsp-废案-00">
+        <omgdi:waypoint x="944.0" y="261.0"></omgdi:waypoint>
+        <omgdi:waypoint x="846.0" y="261.0"></omgdi:waypoint>
+        <omgdi:waypoint x="846.0" y="1018.0"></omgdi:waypoint>
+        <omgdi:waypoint x="947.0" y="1018.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="32.0" x="835.0" y="963.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="czpd_oper" id="BPMNEdge_czpd_oper">
+        <omgdi:waypoint x="962.0" y="562.0"></omgdi:waypoint>
+        <omgdi:waypoint x="964.0" y="589.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="964.0" y="629.0"></omgdi:waypoint>
+        <omgdi:waypoint x="962.0" y="668.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="944.0" y="609.0"></omgdi:waypoint>
+        <omgdi:waypoint x="854.0" y="609.0"></omgdi:waypoint>
+        <omgdi:waypoint x="854.0" y="175.0"></omgdi:waypoint>
+        <omgdi:waypoint x="912.0" y="187.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="czpd_oper2" id="BPMNEdge_czpd_oper2">
+        <omgdi:waypoint x="766.0" y="530.0"></omgdi:waypoint>
+        <omgdi:waypoint x="766.0" y="437.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="786.0" y="417.0"></omgdi:waypoint>
+        <omgdi:waypoint x="845.0" y="417.0"></omgdi:waypoint>
+        <omgdi:waypoint x="845.0" y="695.0"></omgdi:waypoint>
+        <omgdi:waypoint x="910.0" y="695.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+        <omgdi:waypoint x="786.0" y="417.0"></omgdi:waypoint>
+        <omgdi:waypoint x="847.0" y="417.0"></omgdi:waypoint>
+        <omgdi:waypoint x="847.0" y="178.0"></omgdi:waypoint>
+        <omgdi:waypoint x="912.0" y="187.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-0-3331-3331.jsp-待协办部门反馈-778" id="BPMNEdge_bpmn-0-3331-3331.jsp-待协办部门反馈-778">
+        <omgdi:waypoint x="1240.0" y="719.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1240.0" y="793.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="96.0" x="1183.0" y="733.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-1-20-3335-3335.jsp-待主办部门反馈-779" id="BPMNEdge_bpmn-1-20-3335-3335.jsp-待主办部门反馈-779">
+        <omgdi:waypoint x="1361.0" y="820.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1446.0" y="820.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="1381.0" y="823.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-0-3206-3206.jsp-待处置-40" id="BPMNEdge_bpmn-0-3206-3206.jsp-待处置-40">
+        <omgdi:waypoint x="614.0" y="357.0"></omgdi:waypoint>
+        <omgdi:waypoint x="714.0" y="357.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="96.0" x="613.0" y="337.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="ksrwcz_oper" id="BPMNEdge_ksrwcz_oper">
+        <omgdi:waypoint x="766.0" y="330.0"></omgdi:waypoint>
+        <omgdi:waypoint x="766.0" y="315.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn2-1-22-3212-3212.jsp-待派遣-30" id="BPMNEdge_bpmn2-1-22-3212-3212.jsp-待派遣-30">
+        <omgdi:waypoint x="746.0" y="295.0"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="262.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="695.0" y="268.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-0-5003-5003.jsp-待处置-40" id="BPMNEdge_bpmn-0-5003-5003.jsp-待处置-40">
+        <omgdi:waypoint x="984.0" y="431.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1085.0" y="431.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="54.0" width="100.0" x="986.0" y="411.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-1-20-5013-5013.jsp-待处置-40" id="BPMNEdge_bpmn-1-20-5013-5013.jsp-待处置-40">
+        <omgdi:waypoint x="1121.0" y="343.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1022.0" y="343.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="1042.0" y="321.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="ejznbmrwcz_oper" id="BPMNEdge_ejznbmrwcz_oper">
+        <omgdi:waypoint x="1142.0" y="400.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1141.0" y="363.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-1-22-5013-5013.jsp-待处置-40" id="BPMNEdge_bpmn-1-22-5013-5013.jsp-待处置-40">
+        <omgdi:waypoint x="1121.0" y="343.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1022.0" y="343.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="1042.0" y="349.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn3-1-22-3203-3203.jsp-待派遣-30" id="BPMNEdge_bpmn3-1-22-3203-3203.jsp-待派遣-30">
+        <omgdi:waypoint x="594.0" y="377.0"></omgdi:waypoint>
+        <omgdi:waypoint x="766.0" y="530.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="632.0" y="448.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn3-1-23-3203-3203.jsp-待派遣-30" id="BPMNEdge_bpmn3-1-23-3203-3203.jsp-待派遣-30">
+        <omgdi:waypoint x="594.0" y="377.0"></omgdi:waypoint>
+        <omgdi:waypoint x="766.0" y="530.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="595.0" y="391.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn2-1-23-3212-3212.jsp-待派遣-30" id="BPMNEdge_bpmn2-1-23-3212-3212.jsp-待派遣-30">
+        <omgdi:waypoint x="746.0" y="295.0"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="262.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="665.0" y="291.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-1-23-5013-5013.jsp-待处置-40" id="BPMNEdge_bpmn-1-23-5013-5013.jsp-待处置-40">
+        <omgdi:waypoint x="1121.0" y="343.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1022.0" y="343.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="1035.0" y="368.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-1-23-3312-3312.jsp-待派遣-30" id="BPMNEdge_bpmn-1-23-3312-3312.jsp-待派遣-30">
+        <omgdi:waypoint x="944.0" y="431.0"></omgdi:waypoint>
+        <omgdi:waypoint x="890.0" y="430.0"></omgdi:waypoint>
+        <omgdi:waypoint x="890.0" y="227.0"></omgdi:waypoint>
+        <omgdi:waypoint x="964.0" y="215.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="876.0" y="387.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-0-3201-3201.jsp-待派遣-30" id="BPMNEdge_bpmn-0-3201-3201.jsp-待派遣-30">
+        <omgdi:waypoint x="944.0" y="101.0"></omgdi:waypoint>
+        <omgdi:waypoint x="594.0" y="101.0"></omgdi:waypoint>
+        <omgdi:waypoint x="595.0" y="230.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="557.0" y="145.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
+        <omgdi:waypoint x="786.0" y="417.0"></omgdi:waypoint>
+        <omgdi:waypoint x="845.0" y="417.0"></omgdi:waypoint>
+        <omgdi:waypoint x="845.0" y="686.0"></omgdi:waypoint>
+        <omgdi:waypoint x="845.0" y="932.0"></omgdi:waypoint>
+        <omgdi:waypoint x="821.0" y="932.0"></omgdi:waypoint>
+        <omgdi:waypoint x="778.0" y="941.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="jdja_oper" id="BPMNEdge_jdja_oper">
+        <omgdi:waypoint x="673.0" y="941.0"></omgdi:waypoint>
+        <omgdi:waypoint x="604.0" y="962.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-0-3213-3213.jsp-待结案核查-50" id="BPMNEdge_bpmn-0-3213-3213.jsp-待结案核查-50">
+        <omgdi:waypoint x="564.0" y="962.0"></omgdi:waypoint>
+        <omgdi:waypoint x="474.0" y="941.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="479.0" y="966.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-0-3221-3221.jsp-已结案-90" id="BPMNEdge_bpmn-0-3221-3221.jsp-已结案-90">
+        <omgdi:waypoint x="584.0" y="982.0"></omgdi:waypoint>
+        <omgdi:waypoint x="584.0" y="1018.0"></omgdi:waypoint>
+        <omgdi:waypoint x="947.0" y="1018.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="32.0" x="584.0" y="982.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="jdczhc_oper" id="BPMNEdge_jdczhc_oper">
+        <omgdi:waypoint x="474.0" y="941.0"></omgdi:waypoint>
+        <omgdi:waypoint x="584.0" y="921.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-1-12-3214-3214.jsp-待结案-91" id="BPMNEdge_bpmn-1-12-3214-3214.jsp-待结案-91">
+        <omgdi:waypoint x="604.0" y="901.0"></omgdi:waypoint>
+        <omgdi:waypoint x="725.0" y="914.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="32.0" x="615.0" y="888.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-1-13-3214-3214.jsp-待派遣-30" id="BPMNEdge_bpmn-1-13-3214-3214.jsp-待派遣-30">
+        <omgdi:waypoint x="564.0" y="901.0"></omgdi:waypoint>
+        <omgdi:waypoint x="152.0" y="901.0"></omgdi:waypoint>
+        <omgdi:waypoint x="152.0" y="262.0"></omgdi:waypoint>
+        <omgdi:waypoint x="538.0" y="262.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="48.0" x="507.0" y="884.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
+        <omgdi:waypoint x="786.0" y="417.0"></omgdi:waypoint>
+        <omgdi:waypoint x="847.0" y="416.0"></omgdi:waypoint>
+        <omgdi:waypoint x="847.0" y="261.0"></omgdi:waypoint>
+        <omgdi:waypoint x="747.0" y="261.0"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="262.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn3-1-20-3203-3203.jsp-待派遣-30" id="BPMNEdge_bpmn3-1-20-3203-3203.jsp-待派遣-30">
+        <omgdi:waypoint x="594.0" y="377.0"></omgdi:waypoint>
+        <omgdi:waypoint x="766.0" y="530.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="612.0" y="423.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="qjhspq_oper" id="BPMNEdge_qjhspq_oper">
+        <omgdi:waypoint x="1272.0" y="206.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1272.0" y="241.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn1-0-3305-3305.jsp-待问题核实-11" id="BPMNEdge_bpmn1-0-3305-3305.jsp-待问题核实-11">
+        <omgdi:waypoint x="1252.0" y="261.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1184.0" y="261.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="1194.0" y="240.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn1-0-3311-3311.jsp-废案-00" id="BPMNEdge_bpmn1-0-3311-3311.jsp-废案-00">
+        <omgdi:waypoint x="1292.0" y="261.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1468.0" y="261.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1610.0" y="260.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1610.0" y="1018.0"></omgdi:waypoint>
+        <omgdi:waypoint x="982.0" y="1018.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="32.0" x="1049.0" y="1022.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn1-0-5339-5339.jsp-待市级城管回复上报市级结果-5341" id="BPMNEdge_bpmn1-0-5339-5339.jsp-待市级城管回复上报市级结果-5341">
+        <omgdi:waypoint x="1292.0" y="261.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1466.0" y="260.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1466.0" y="163.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="1383.0" y="265.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-0-5339-5339.jsp-待市级城管回复上报市级结果-5341" id="BPMNEdge_bpmn-0-5339-5339.jsp-待市级城管回复上报市级结果-5341">
+        <omgdi:waypoint x="944.0" y="261.0"></omgdi:waypoint>
+        <omgdi:waypoint x="847.0" y="261.0"></omgdi:waypoint>
+        <omgdi:waypoint x="847.0" y="132.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1414.0" y="135.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="1146.0" y="108.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn1-0-5333-5333.jsp-待市级城管回退申请通知-5337" id="BPMNEdge_bpmn1-0-5333-5333.jsp-待市级城管回退申请通知-5337">
+        <omgdi:waypoint x="1292.0" y="261.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1466.0" y="260.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1466.0" y="163.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="54.0" width="100.0" x="1416.0" y="198.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-0-5333-5333.jsp-待市级城管回退申请通知-5337" id="BPMNEdge_bpmn-0-5333-5333.jsp-待市级城管回退申请通知-5337">
+        <omgdi:waypoint x="944.0" y="261.0"></omgdi:waypoint>
+        <omgdi:waypoint x="856.0" y="260.0"></omgdi:waypoint>
+        <omgdi:waypoint x="856.0" y="135.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1414.0" y="135.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="54.0" width="100.0" x="1245.0" y="105.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-0-5334-5334.jsp-待市级城管结案申请通知-5338" id="BPMNEdge_bpmn-0-5334-5334.jsp-待市级城管结案申请通知-5338">
+        <omgdi:waypoint x="1024.0" y="773.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1096.0" y="773.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1585.0" y="773.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1605.0" y="773.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1605.0" y="135.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1519.0" y="135.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="54.0" width="100.0" x="1563.0" y="152.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-1-21-3312-3312.jsp-待派遣-30" id="BPMNEdge_bpmn-1-21-3312-3312.jsp-待派遣-30">
+        <omgdi:waypoint x="964.0" y="451.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1119.0" y="507.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="1014.0" y="476.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="qjrwpq1_oper" id="BPMNEdge_qjrwpq1_oper">
+        <omgdi:waypoint x="1119.0" y="562.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1119.0" y="589.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn1-0-3302-3302.jsp-待处置-40" id="BPMNEdge_bpmn1-0-3302-3302.jsp-待处置-40">
+        <omgdi:waypoint x="1099.0" y="609.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1028.0" y="608.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1028.0" y="401.0"></omgdi:waypoint>
+        <omgdi:waypoint x="965.0" y="375.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="54.0" width="100.0" x="956.0" y="639.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn1-0-3304-3304.jsp-待派遣-30" id="BPMNEdge_bpmn1-0-3304-3304.jsp-待派遣-30">
+        <omgdi:waypoint x="1099.0" y="609.0"></omgdi:waypoint>
+        <omgdi:waypoint x="847.0" y="608.0"></omgdi:waypoint>
+        <omgdi:waypoint x="847.0" y="262.0"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="262.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="999.0" y="609.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-0-3315-3315.jsp-待派遣协办部门-777" id="BPMNEdge_bpmn-0-3315-3315.jsp-待派遣协办部门-777">
+        <omgdi:waypoint x="1139.0" y="609.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1252.0" y="609.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="54.0" width="100.0" x="1139.0" y="609.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="zbbmpqxb_oper" id="BPMNEdge_zbbmpqxb_oper">
+        <omgdi:waypoint x="1304.0" y="637.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1240.0" y="679.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="zbbmfk_oper" id="BPMNEdge_zbbmfk_oper">
+        <omgdi:waypoint x="1498.0" y="793.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1498.0" y="719.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn1-1-23-3312-3312.jsp-待派遣-30" id="BPMNEdge_bpmn1-1-23-3312-3312.jsp-待派遣-30">
+        <omgdi:waypoint x="1240.0" y="679.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1240.0" y="212.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1017.0" y="187.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="1218.0" y="463.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn1-1-22-3312-3312.jsp-待派遣-30" id="BPMNEdge_bpmn1-1-22-3312-3312.jsp-待派遣-30">
+        <omgdi:waypoint x="1240.0" y="679.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1240.0" y="215.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1017.0" y="187.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="1218.0" y="556.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn1-1-20-3312-3312.jsp-待结案-91" id="BPMNEdge_bpmn1-1-20-3312-3312.jsp-待结案-91">
+        <omgdi:waypoint x="1220.0" y="699.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1156.0" y="696.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1015.0" y="695.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="1017.0" y="703.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn2-1-22-3336-3336.jsp-待派遣-30" id="BPMNEdge_bpmn2-1-22-3336-3336.jsp-待派遣-30">
+        <omgdi:waypoint x="1498.0" y="679.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1498.0" y="241.0"></omgdi:waypoint>
+        <omgdi:waypoint x="964.0" y="215.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="1449.0" y="424.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn2-1-23-3336-3336.jsp-待派遣-30" id="BPMNEdge_bpmn2-1-23-3336-3336.jsp-待派遣-30">
+        <omgdi:waypoint x="1498.0" y="679.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1498.0" y="242.0"></omgdi:waypoint>
+        <omgdi:waypoint x="964.0" y="215.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="1465.0" y="550.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn2-1-20-3336-3336.jsp-待结案-91" id="BPMNEdge_bpmn2-1-20-3336-3336.jsp-待结案-91">
+        <omgdi:waypoint x="1478.0" y="699.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1015.0" y="695.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="1380.0" y="684.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn1-0-3331-3331.jsp-待协办部门反馈-778" id="BPMNEdge_bpmn1-0-3331-3331.jsp-待协办部门反馈-778">
+        <omgdi:waypoint x="1498.0" y="719.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1240.0" y="793.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="96.0" x="1355.0" y="756.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn1-0-3315-3315.jsp-待派遣协办部门-777" id="BPMNEdge_bpmn1-0-3315-3315.jsp-待派遣协办部门-777">
+        <omgdi:waypoint x="1004.0" y="753.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1304.0" y="637.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="54.0" width="100.0" x="1049.0" y="720.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn2-0-3315-3315.jsp-待派遣协办部门-777" id="BPMNEdge_bpmn2-0-3315-3315.jsp-待派遣协办部门-777">
+        <omgdi:waypoint x="964.0" y="281.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1304.0" y="361.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1304.0" y="582.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="54.0" width="100.0" x="1272.0" y="420.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn2-0-3302-3302.jsp-待处置-40" id="BPMNEdge_bpmn2-0-3302-3302.jsp-待处置-40">
+        <omgdi:waypoint x="1004.0" y="753.0"></omgdi:waypoint>
+        <omgdi:waypoint x="965.0" y="375.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="54.0" width="100.0" x="870.0" y="449.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn2-0-3304-3304.jsp-待派遣-30" id="BPMNEdge_bpmn2-0-3304-3304.jsp-待派遣-30">
+        <omgdi:waypoint x="1004.0" y="753.0"></omgdi:waypoint>
+        <omgdi:waypoint x="595.0" y="294.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="876.0" y="622.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn2-0-3311-3311.jsp-废案-00" id="BPMNEdge_bpmn2-0-3311-3311.jsp-废案-00">
+        <omgdi:waypoint x="1024.0" y="773.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1083.0" y="773.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1083.0" y="1018.0"></omgdi:waypoint>
+        <omgdi:waypoint x="982.0" y="1018.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="32.0" x="1066.0" y="884.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn2-0-5333-5333.jsp-待市级城管回退申请通知-5337" id="BPMNEdge_bpmn2-0-5333-5333.jsp-待市级城管回退申请通知-5337">
+        <omgdi:waypoint x="1024.0" y="773.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1609.0" y="773.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1609.0" y="138.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1519.0" y="135.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="54.0" width="100.0" x="1103.0" y="774.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn3-0-3311-3311.jsp-废案-00" id="BPMNEdge_bpmn3-0-3311-3311.jsp-废案-00">
+        <omgdi:waypoint x="1119.0" y="629.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1118.0" y="1018.0"></omgdi:waypoint>
+        <omgdi:waypoint x="982.0" y="1018.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="32.0" x="1105.0" y="842.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn3-0-5333-5333.jsp-待市级城管回退申请通知-5337" id="BPMNEdge_bpmn3-0-5333-5333.jsp-待市级城管回退申请通知-5337">
+        <omgdi:waypoint x="1119.0" y="589.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1337.0" y="325.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1466.0" y="163.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="54.0" width="100.0" x="1277.0" y="318.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="lxhy_oper" id="BPMNEdge_lxhy_oper">
+        <omgdi:waypoint x="1293.0" y="820.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1321.0" y="820.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-1-22-3335-3335.jsp-待主办部门反馈-779" id="BPMNEdge_bpmn-1-22-3335-3335.jsp-待主办部门反馈-779">
+        <omgdi:waypoint x="1361.0" y="820.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1446.0" y="820.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="1360.0" y="843.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-1-23-3335-3335.jsp-待主办部门反馈-779" id="BPMNEdge_bpmn-1-23-3335-3335.jsp-待主办部门反馈-779">
+        <omgdi:waypoint x="1361.0" y="820.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1446.0" y="820.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="1365.0" y="860.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn1-0-5334-5334.jsp-待市级城管结案申请通知-5338" id="BPMNEdge_bpmn1-0-5334-5334.jsp-待市级城管结案申请通知-5338">
+        <omgdi:waypoint x="944.0" y="261.0"></omgdi:waypoint>
+        <omgdi:waypoint x="847.0" y="260.0"></omgdi:waypoint>
+        <omgdi:waypoint x="847.0" y="135.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1414.0" y="135.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="54.0" width="100.0" x="1038.0" y="99.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn2-0-5334-5334.jsp-待市级城管结案申请通知-5338" id="BPMNEdge_bpmn2-0-5334-5334.jsp-待市级城管结案申请通知-5338">
+        <omgdi:waypoint x="1272.0" y="241.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1466.0" y="163.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="54.0" width="100.0" x="1295.0" y="184.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-0-3211-3211.jsp-废案-00" id="BPMNEdge_bpmn-0-3211-3211.jsp-废案-00">
+        <omgdi:waypoint x="594.0" y="377.0"></omgdi:waypoint>
+        <omgdi:waypoint x="964.0" y="1001.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="32.0" x="864.0" y="893.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn3-0-3211-3211.jsp-废案-00" id="BPMNEdge_bpmn3-0-3211-3211.jsp-废案-00">
+        <omgdi:waypoint x="584.0" y="982.0"></omgdi:waypoint>
+        <omgdi:waypoint x="964.0" y="1001.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="32.0" x="584.0" y="982.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-0-3207-3207.jsp-待派遣-30" id="BPMNEdge_bpmn-0-3207-3207.jsp-待派遣-30">
+        <omgdi:waypoint x="574.0" y="357.0"></omgdi:waypoint>
+        <omgdi:waypoint x="462.0" y="357.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="481.0" y="363.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sqzxypq_oper" id="BPMNEdge_sqzxypq_oper">
+        <omgdi:waypoint x="409.0" y="385.0"></omgdi:waypoint>
+        <omgdi:waypoint x="409.0" y="443.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn1-0-3204-3204.jsp-待处置-40" id="BPMNEdge_bpmn1-0-3204-3204.jsp-待处置-40">
+        <omgdi:waypoint x="389.0" y="463.0"></omgdi:waypoint>
+        <omgdi:waypoint x="295.0" y="456.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="54.0" width="100.0" x="319.0" y="461.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sjwggzz_oper" id="BPMNEdge_sjwggzz_oper">
+        <omgdi:waypoint x="242.0" y="484.0"></omgdi:waypoint>
+        <omgdi:waypoint x="242.0" y="537.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-1-23-3012-3012.jsp-待处置-40" id="BPMNEdge_bpmn-1-23-3012-3012.jsp-待处置-40">
+        <omgdi:waypoint x="242.0" y="537.0"></omgdi:waypoint>
+        <omgdi:waypoint x="409.0" y="385.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="245.0" y="502.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-1-22-3012-3012.jsp-待处置-40" id="BPMNEdge_bpmn-1-22-3012-3012.jsp-待处置-40">
+        <omgdi:waypoint x="242.0" y="537.0"></omgdi:waypoint>
+        <omgdi:waypoint x="409.0" y="385.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="238.0" y="539.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-1-20-3012-3012.jsp-待派遣-30" id="BPMNEdge_bpmn-1-20-3012-3012.jsp-待派遣-30">
+        <omgdi:waypoint x="242.0" y="537.0"></omgdi:waypoint>
+        <omgdi:waypoint x="409.0" y="385.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="238.0" y="522.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn1-1-23-3208-3208.jsp-待派遣-30" id="BPMNEdge_bpmn1-1-23-3208-3208.jsp-待派遣-30">
+        <omgdi:waypoint x="409.0" y="443.0"></omgdi:waypoint>
+        <omgdi:waypoint x="324.0" y="431.0"></omgdi:waypoint>
+        <omgdi:waypoint x="324.0" y="262.0"></omgdi:waypoint>
+        <omgdi:waypoint x="538.0" y="262.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="364.0" y="270.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn1-1-22-3208-3208.jsp-待派遣-30" id="BPMNEdge_bpmn1-1-22-3208-3208.jsp-待派遣-30">
+        <omgdi:waypoint x="409.0" y="443.0"></omgdi:waypoint>
+        <omgdi:waypoint x="319.0" y="431.0"></omgdi:waypoint>
+        <omgdi:waypoint x="319.0" y="261.0"></omgdi:waypoint>
+        <omgdi:waypoint x="538.0" y="262.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="438.0" y="269.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn1-1-20-3208-3208.jsp-待派遣-30" id="BPMNEdge_bpmn1-1-20-3208-3208.jsp-待派遣-30">
+        <omgdi:waypoint x="389.0" y="463.0"></omgdi:waypoint>
+        <omgdi:waypoint x="321.0" y="440.0"></omgdi:waypoint>
+        <omgdi:waypoint x="321.0" y="262.0"></omgdi:waypoint>
+        <omgdi:waypoint x="538.0" y="262.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="479.0" y="293.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-0-3205-3205.jsp-待处置-40" id="BPMNEdge_bpmn-0-3205-3205.jsp-待处置-40">
+        <omgdi:waypoint x="429.0" y="463.0"></omgdi:waypoint>
+        <omgdi:waypoint x="529.0" y="463.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="54.0" width="100.0" x="424.0" y="466.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn2-1-20-3212-3212.jsp-待派遣-30" id="BPMNEdge_bpmn2-1-20-3212-3212.jsp-待派遣-30">
+        <omgdi:waypoint x="746.0" y="295.0"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="262.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="683.0" y="303.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="ejwgzcz_oper" id="BPMNEdge_ejwgzcz_oper">
+        <omgdi:waypoint x="581.0" y="491.0"></omgdi:waypoint>
+        <omgdi:waypoint x="581.0" y="537.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-1-23-3112-3112.jsp-待派遣-30" id="BPMNEdge_bpmn-1-23-3112-3112.jsp-待派遣-30">
+        <omgdi:waypoint x="581.0" y="537.0"></omgdi:waypoint>
+        <omgdi:waypoint x="409.0" y="385.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="460.0" y="418.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-1-22-3112-3112.jsp-待派遣-30" id="BPMNEdge_bpmn-1-22-3112-3112.jsp-待派遣-30">
+        <omgdi:waypoint x="581.0" y="537.0"></omgdi:waypoint>
+        <omgdi:waypoint x="409.0" y="385.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="448.0" y="400.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-1-20-3112-3112.jsp-待派遣-30" id="BPMNEdge_bpmn-1-20-3112-3112.jsp-待派遣-30">
+        <omgdi:waypoint x="581.0" y="537.0"></omgdi:waypoint>
+        <omgdi:waypoint x="409.0" y="385.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="524.0" y="514.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow9" id="BPMNEdge_flow9">
+        <omgdi:waypoint x="786.0" y="417.0"></omgdi:waypoint>
+        <omgdi:waypoint x="842.0" y="417.0"></omgdi:waypoint>
+        <omgdi:waypoint x="842.0" y="792.0"></omgdi:waypoint>
+        <omgdi:waypoint x="778.0" y="792.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sqja_oper" id="BPMNEdge_sqja_oper">
+        <omgdi:waypoint x="673.0" y="792.0"></omgdi:waypoint>
+        <omgdi:waypoint x="604.0" y="823.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn3-0-3111-3111.jsp-废案-00" id="BPMNEdge_bpmn3-0-3111-3111.jsp-废案-00">
+        <omgdi:waypoint x="584.0" y="843.0"></omgdi:waypoint>
+        <omgdi:waypoint x="964.0" y="1001.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="32.0" x="631.0" y="870.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-0-3121-3121.jsp-已结案-90" id="BPMNEdge_bpmn-0-3121-3121.jsp-已结案-90">
+        <omgdi:waypoint x="584.0" y="843.0"></omgdi:waypoint>
+        <omgdi:waypoint x="584.0" y="1018.0"></omgdi:waypoint>
+        <omgdi:waypoint x="947.0" y="1018.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="32.0" x="570.0" y="842.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-0-3113-3113.jsp-待结案核查-50" id="BPMNEdge_bpmn-0-3113-3113.jsp-待结案核查-50">
+        <omgdi:waypoint x="564.0" y="823.0"></omgdi:waypoint>
+        <omgdi:waypoint x="474.0" y="792.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="494.0" y="819.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sqczhc_oper" id="BPMNEdge_sqczhc_oper">
+        <omgdi:waypoint x="474.0" y="792.0"></omgdi:waypoint>
+        <omgdi:waypoint x="581.0" y="774.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-1-12-3114-3114.jsp-待结案-91" id="BPMNEdge_bpmn-1-12-3114-3114.jsp-待结案-91">
+        <omgdi:waypoint x="601.0" y="754.0"></omgdi:waypoint>
+        <omgdi:waypoint x="673.0" y="792.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="32.0" x="612.0" y="747.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-1-13-3114-3114.jsp-待派遣-30" id="BPMNEdge_bpmn-1-13-3114-3114.jsp-待派遣-30">
+        <omgdi:waypoint x="561.0" y="754.0"></omgdi:waypoint>
+        <omgdi:waypoint x="175.0" y="754.0"></omgdi:waypoint>
+        <omgdi:waypoint x="175.0" y="357.0"></omgdi:waypoint>
+        <omgdi:waypoint x="357.0" y="357.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="48.0" x="494.0" y="734.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="bpmn-0-3101-3101.jsp-待派遣-30" id="BPMNEdge_bpmn-0-3101-3101.jsp-待派遣-30">
+        <omgdi:waypoint x="944.0" y="101.0"></omgdi:waypoint>
+        <omgdi:waypoint x="409.0" y="101.0"></omgdi:waypoint>
+        <omgdi:waypoint x="409.0" y="330.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="64.0" x="361.0" y="179.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

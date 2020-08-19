@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html  lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-nodeInfo-add">
+			<div class="form-group">	
+				<label class="col-sm-3 control-label">节点名称：</label>
+				<div class="col-sm-8">
+					<input id="nodeName" name="nodeName" class="form-control" type="text">
+				</div>
+			</div>
+		</form>
+	</div>
+    <div th:include="include::footer"></div>
+    <script type="text/javascript">
+		var prefix = ctx + "nodeInfo"
+		$("#form-nodeInfo-add").validate({
+			rules:{
+				nodeName:{
+					required:true,
+				},
+			}
+		});
+		
+		function submitHandler() {
+			$.operate.save(prefix + "/add", $('#form-nodeInfo-add').serialize());
+	    }
+	</script>
+</body>
+</html>

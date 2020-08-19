@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.numberone.kafka.mapper.KafkamessageMapper">
+    
+    <resultMap type="Kafkamessage" id="KafkamessageResult">
+        <result property="messageId"    column="messageId"    />
+        <result property="message"    column="message"    />
+    </resultMap>
+	
+	<sql id="selectKafkamessageVo">
+        select messageId, message from kafkamessage
+    </sql>
+	
+    <select id="selectKafkamessageList" parameterType="Kafkamessage" resultMap="KafkamessageResult">
+        <include refid="selectKafkamessageVo"/>
+        <where>  
+            <if test="messageId != null "> and messageId = #{messageId}</if>
+             <if test="message != null  and message != '' "> and message = #{message}</if>
+         </where>
+    </select>
+    
+    <select id="selectKafkamessageById" parameterType="Integer" resultMap="KafkamessageResult">
+        <include refid="selectKafkamessageVo"/>
+        where messageId = #{messageId}
+    </select>
+        
+    <insert id="insertKafkamessage" parameterType="Kafkamessage" useGeneratedKeys="true" keyProperty="messageId">
+        insert into kafkamessage
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="message != null  and message != ''  ">message,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="message != null  and message != ''  ">#{message},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateKafkamessage" parameterType="Kafkamessage">
+        update kafkamessage
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="message != null  and message != ''  ">message = #{message},</if>
+        </trim>
+        where messageId = #{messageId}
+    </update>
+
+	<delete id="deleteKafkamessageById" parameterType="Integer">
+        delete from kafkamessage where messageId = #{messageId}
+    </delete>
+	
+    <delete id="deleteKafkamessageByIds" parameterType="String">
+        delete from kafkamessage where messageId in 
+        <foreach item="messageId" collection="array" open="(" separator="," close=")">
+            #{messageId}
+        </foreach>
+    </delete>
+    
+</mapper>

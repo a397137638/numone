@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="test" isExecutable="true">
+    <userTask id="A713a23cd-5606-483e-bde9-0c126d21f343" name="主管审批"></userTask>
+    <startEvent id="Ad07d5f6e-9d2c-4685-bdd5-9d1be6eee657"></startEvent>
+    <sequenceFlow id="sequenceFlow-1c4ff809-7035-4f89-936b-271fe487288c" sourceRef="Ad07d5f6e-9d2c-4685-bdd5-9d1be6eee657" targetRef="A713a23cd-5606-483e-bde9-0c126d21f343"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_test">
+    <bpmndi:BPMNPlane bpmnElement="test" id="BPMNPlane_test">
+      <bpmndi:BPMNShape bpmnElement="A713a23cd-5606-483e-bde9-0c126d21f343" id="BPMNShape_A713a23cd-5606-483e-bde9-0c126d21f343">
+        <omgdc:Bounds height="60.0" width="100.0" x="80.0" y="0.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Ad07d5f6e-9d2c-4685-bdd5-9d1be6eee657" id="BPMNShape_Ad07d5f6e-9d2c-4685-bdd5-9d1be6eee657">
+        <omgdc:Bounds height="30.0" width="30.0" x="0.0" y="15.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sequenceFlow-1c4ff809-7035-4f89-936b-271fe487288c" id="BPMNEdge_sequenceFlow-1c4ff809-7035-4f89-936b-271fe487288c">
+        <omgdi:waypoint x="30.0" y="30.0"></omgdi:waypoint>
+        <omgdi:waypoint x="42.0" y="30.0"></omgdi:waypoint>
+        <omgdi:waypoint x="42.0" y="30.000000000000007"></omgdi:waypoint>
+        <omgdi:waypoint x="80.0" y="30.000000000000007"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

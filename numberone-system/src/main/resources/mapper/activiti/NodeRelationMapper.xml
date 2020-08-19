@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.numberone.activiti.mapper.NodeRelationMapper">
+    
+    <resultMap type="NodeRelation" id="NodeRelationResult">
+        <result property="id"    column="id"    />
+        <result property="parentId"    column="parentId"    />
+        <result property="terms"    column="terms"    />
+        <result property="modelId"    column="modelId"    />
+        <result property="nodeName"    column="nodeName"    />
+        <result property="taskType"    column="taskType"    />
+        <result property="nodeId"    column="nodeId"    />
+        <result property="userIds"    column="userIds"    />
+        <result property="userType"    column="userType"    />
+    </resultMap>
+	
+	<sql id="selectNodeRelationVo">
+        select id, parentId, terms, modelId ,nodeName,taskType,nodeId,userIds,userType from node_relation
+    </sql>
+	
+    <select id="selectNodeRelationList" parameterType="NodeRelation" resultMap="NodeRelationResult">
+        <include refid="selectNodeRelationVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="parentId != null "> and parentId = #{parentId}</if>
+             <if test="terms != null  and terms != '' "> and terms = #{terms}</if>
+             <if test="modelId != null  and modelId != '' "> and modelId = #{modelId}</if>
+            <if test="taskType != null  and taskType != '' "> and taskType = #{taskType}</if>
+            <if test="nodeId != null  and nodeId != '' "> and nodeId = #{nodeId}</if>
+            <if test="userIds != null  and userIds != '' "> and userIds = #{userIds}</if>
+            <if test="userType != null  and userType != '' "> and userType = #{userType}</if>
+         </where>
+    </select>
+    
+    <select id="selectNodeRelationById" parameterType="Integer" resultMap="NodeRelationResult">
+        <include refid="selectNodeRelationVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertNodeRelation" parameterType="NodeRelation" useGeneratedKeys="true" keyProperty="id">
+        insert into node_relation
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">id,</if>
+			<if test="parentId != null  ">parentId,</if>
+			<if test="terms != null  and terms != ''  ">terms,</if>
+			<if test="modelId != null  and modelId != ''  ">modelId,</if>
+            <if test="nodeName != null  and nodeName != ''  ">nodeName,</if>
+            <if test="taskType != null  and taskType != ''  ">taskType,</if>
+            <if test="nodeId != null  and nodeId != ''  ">nodeId,</if>
+            <if test="userType != null  and userType != ''  ">userType,</if>
+            <if test="userIds != null  and userIds != ''  ">userIds,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">#{id},</if>
+			<if test="parentId != null  ">#{parentId},</if>
+			<if test="terms != null  and terms != ''  ">#{terms},</if>
+			<if test="modelId != null  and modelId != ''  ">#{modelId},</if>
+            <if test="nodeName != null  and nodeName != ''  "> #{nodeName},</if>
+            <if test="taskType != null  and taskType != ''  "> #{taskType},</if>
+            <if test="nodeId != null  and nodeId != ''  "> #{nodeId},</if>
+            <if test="userType != null  and userType != ''  "> #{userType},</if>
+            <if test="userIds != null  and userIds != ''  "> #{userIds},</if>
+        </trim>
+    </insert>
+	 
+    <update id="updateNodeRelation" parameterType="NodeRelation">
+        update node_relation
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="parentId != null  ">parentId = #{parentId},</if>
+            <if test="terms != null  and terms != ''  ">terms = #{terms},</if>
+            <if test="modelId != null  and modelId != ''  ">modelId = #{modelId},</if>
+            <if test="nodeName != null  and nodeName != ''  ">nodeName = #{nodeName},</if>
+            <if test="taskType != null  and taskType != ''  ">taskType = #{taskType},</if>
+            <if test="nodeId != null  and nodeId != ''  ">nodeId = #{nodeId},</if>
+            <if test="userType != null  and userType != ''  ">userType = #{userType},</if>
+            <if test="userIds != null  and userIds != ''  ">userIds = #{userIds},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteNodeRelationById" parameterType="Integer">
+        delete from node_relation where id = #{id}
+    </delete>
+	
+    <delete id="deleteNodeRelationByIds" parameterType="String">
+        delete from node_relation where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+    <select id="getParentIdByDistinct" resultType="string" parameterType="string">
+        select distinct parentId from node_relation where modelId=#{modelId}
+    </select>
+    
+</mapper>
